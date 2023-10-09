@@ -6,7 +6,7 @@ from PhysicsTools.NanoAOD.taus_cff import *
 from PhysicsTools.NanoAOD.jetsAK4_CHS_cff import *
 #from PhysicsTools.NanoAOD.jets_cff import *
 
-def customize_process_and_associate(process, disTauTagOutputOpt = 1) :
+def customize_process_and_associate(process, isMC, disTauTagOutputOpt = 1) :
     
     # Lost tracks
     process.lostTrackTable = cms.EDProducer("SimpleCandidateFlatTableProducer",
@@ -103,16 +103,16 @@ def customize_process_and_associate(process, disTauTagOutputOpt = 1) :
         ),
     )
     
+    if isMC:     
+        # GenParticles
+        myGenParticleTable = genParticleTable.clone()
+        myGenParticleTable.variables.vertexX        = Var("vertex.X"      , float)
+        myGenParticleTable.variables.vertexY        = Var("vertex.Y"      , float)
+        myGenParticleTable.variables.vertexZ        = Var("vertex.Z"      , float)
+        myGenParticleTable.variables.vertexRho      = Var("vertex.Rho"    , float)
+        myGenParticleTable.variables.vertexR        = Var("vertex.R"      , float)
     
-    # GenParticles
-    myGenParticleTable = genParticleTable.clone()
-    myGenParticleTable.variables.vertexX        = Var("vertex.X"      , float)
-    myGenParticleTable.variables.vertexY        = Var("vertex.Y"      , float)
-    myGenParticleTable.variables.vertexZ        = Var("vertex.Z"      , float)
-    myGenParticleTable.variables.vertexRho      = Var("vertex.Rho"    , float)
-    myGenParticleTable.variables.vertexR        = Var("vertex.R"      , float)
-    
-    process.globalReplace("genParticleTable", myGenParticleTable)
+        process.globalReplace("genParticleTable", myGenParticleTable)
     
     
     ## GenVisTau
@@ -126,7 +126,7 @@ def customize_process_and_associate(process, disTauTagOutputOpt = 1) :
     #process.globalReplace("genVisTauTable", myGenVisTauTable)
     
     if (disTauTagOutputOpt > 0) :
-        
+        print("DisTauTagOutputOpt is ", disTauTagOutputOpt)
         process.disTauTag = cms.EDProducer(
             "DisTauTag",
             graphPath = cms.string("data/particlenet_v1_a27159734e304ea4b7f9e0042baa9e22.pb"),

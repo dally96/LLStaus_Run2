@@ -24,7 +24,7 @@ def get_args() :
     #     "List of root files to process (alternative to sourceFile option).")
 
     args.register("outFile",
-        "nanoaod.root", # Default value
+        "nanoaod_Run2.root", # Default value
         VarParsing.multiplicity.singleton, # singleton or list
         VarParsing.varType.string, # string, int, or float
         "Output file base name (w/o extension): [base name].root" # Description
@@ -48,6 +48,20 @@ def get_args() :
         VarParsing.varType.string, # string, int, or float
         "Syntax: Run1:Event1-Run2:Event2 Run3:Event3-Run4:Event4(includes both)" # Description
     )
+
+    args.register("sampleType",
+        "MC", # Default value
+        VarParsing.multiplicity.singleton, # singleton or list
+        VarParsing.varType.string, # string, int, or float
+        "Must be one of the following: [Data, MC]" # Description
+    )
+    
+    args.register("era",
+        "2018", # Default value
+        VarParsing.multiplicity.singleton, # singleton or list
+        VarParsing.varType.string, # string, int, or float
+        "Must be one of the following: [2016, 2017, 2018]" # Description
+    )
     
     args.register("isMC",
         True, # Default value
@@ -57,7 +71,7 @@ def get_args() :
     )
     
     args.register("disTauTagOutputOpt",
-        0, # Default value
+        1, # Default value
         VarParsing.multiplicity.singleton, # singleton or list
         VarParsing.varType.int, # string, int, or float
         "0: NANOAOD, 1: NANOAOD + disTauTagger, 2: disTauTagger only" # Description

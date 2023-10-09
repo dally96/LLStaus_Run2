@@ -142,7 +142,7 @@ void DisTauTag::fill_zero(tensorflow::Tensor& tensor)
     int num_dimensions = tensor.shape().dims();
     for(int ii_dim=0; ii_dim<num_dimensions; ii_dim++)
         size_=size_*tensor.shape().dim_size(ii_dim);
-    
+
     for(size_t ii=0; ii<size_; ii++)
         tensor.flat<float>()(ii) = 0.0;
 }
@@ -154,32 +154,32 @@ const float DisTauTag::Scale(const Int_t idx, const Float_t value, const bool in
                         FeatureT::lim_min.at(idx).at(inner), FeatureT::lim_max.at(idx).at(inner));
 }
 
-void DisTauTag::saveInputs(const tensorflow::Tensor& tensor, const std::string& block_name)
-{
-    int tau_n = tensor.shape().dim_size(0);
-    int pf_n = tensor.shape().dim_size(1);
-    int ftr_n = tensor.shape().dim_size(2);
-
-    (*json_file_) << "\"" << block_name <<  "\":[";
-    for(int tau_idx=0; tau_idx<tau_n; tau_idx++)
-    {
-        (*json_file_) << "[";
-        for(int pf_idx=0; pf_idx<pf_n; pf_idx++)
-        {
-            (*json_file_) << "[";
-            for(int ftr_idx=0; ftr_idx<ftr_n; ftr_idx++)
-            {
-                (*json_file_) << std::setprecision(7) << std::fixed << tensor.tensor<float, 3>()(tau_idx, pf_idx, ftr_idx);
-                if(ftr_idx<ftr_n-1) (*json_file_) << ", ";
-            }
-            (*json_file_) << "]";
-            if(pf_idx<pf_n-1) (*json_file_) << ", ";
-        }
-        (*json_file_) << "]";
-        if(tau_idx<tau_n-1) (*json_file_) << ", ";
-    }
-    (*json_file_) << "]";
-}
+//void DisTauTag::saveInputs(const tensorflow::Tensor& tensor, const std::string& block_name)
+//{
+//    int tau_n = tensor.shape().dim_size(0);
+//    int pf_n = tensor.shape().dim_size(1);
+//    int ftr_n = tensor.shape().dim_size(2);
+//
+//    (*json_file_) << "\"" << block_name <<  "\":[";
+//    for(int tau_idx=0; tau_idx<tau_n; tau_idx++)
+//    {
+//        (*json_file_) << "[";
+//        for(int pf_idx=0; pf_idx<pf_n; pf_idx++)
+//        {
+//            (*json_file_) << "[";
+//            for(int ftr_idx=0; ftr_idx<ftr_n; ftr_idx++)
+//            {
+//                (*json_file_) << std::setprecision(7) << std::fixed << tensor.tensor<float, 3>()(tau_idx, pf_idx, ftr_idx);
+//                if(ftr_idx<ftr_n-1) (*json_file_) << ", ";
+//            }
+//            (*json_file_) << "]";
+//            if(pf_idx<pf_n-1) (*json_file_) << ", ";
+//        }
+//        (*json_file_) << "]";
+//        if(tau_idx<tau_n-1) (*json_file_) << ", ";
+//    }
+//    (*json_file_) << "]";
+//}
 
 void DisTauTag::produce(edm::Event& event, const edm::EventSetup& setup) {
 
@@ -298,30 +298,30 @@ void DisTauTag::produce(edm::Event& event, const edm::EventSetup& setup) {
       v_score0.at(jetIndex) = outputs[0].flat<float>()(0);
       v_score1.at(jetIndex) = outputs[0].flat<float>()(1);
 
-      if (save_inputs_) {
+      //if (save_inputs_) {
 
-        std::string json_file_name = "distag_"
-                + std::to_string(event.id().run()) + "_"
-                + std::to_string(event.id().luminosityBlock()) + "_"
-                + std::to_string(event.id().event()) + "_" +
-                + "jet_" + std::to_string(jetIndex) + ".json";
+      //  std::string json_file_name = "distag_"
+      //          + std::to_string(event.id().run()) + "_"
+      //          + std::to_string(event.id().luminosityBlock()) + "_"
+      //          + std::to_string(event.id().event()) + "_" +
+      //          + "jet_" + std::to_string(jetIndex) + ".json";
 
-        json_file_ = new std::ofstream(json_file_name.data());
+      //  json_file_ = new std::ofstream(json_file_name.data());
 
-        (*json_file_) << "{";
+      //  (*json_file_) << "{";
 
-        saveInputs(input_1, "PfCand");
-        (*json_file_) << ", ";
-        saveInputs(input_2, "PfCandCategorical");
-        (*json_file_) << ", \"Output\":["
-                        << outputs[0].flat<float>()(0) << ","
-                        << outputs[0].flat<float>()(1)
-                        << "]";
+      //  saveInputs(input_1, "PfCand");
+      //  (*json_file_) << ", ";
+      //  saveInputs(input_2, "PfCandCategorical");
+      //  (*json_file_) << ", \"Output\":["
+      //                  << outputs[0].flat<float>()(0) << ","
+      //                  << outputs[0].flat<float>()(1)
+      //                  << "]";
 
-        (*json_file_) << "}";
+      //  (*json_file_) << "}";
 
-        delete json_file_;
-      }
+      //  delete json_file_;
+      //}
     }
     
     test_vector(v_score0);

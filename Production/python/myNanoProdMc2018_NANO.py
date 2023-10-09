@@ -5,10 +5,15 @@
 # with command line args: myNanoProdMc2018 -s NANO --mc --eventcontent NANOAODSIM --datatier NANOAODSIM --no_exec --conditions 106X_upgrade2018_realistic_v16_L1v1 --era Run2_2018,run2_nanoAOD_106Xv2 --customise_commands=process.add_(cms.Service("InitRootHandlers", EnableIMT = cms.untracked.bool(False)))
 import FWCore.ParameterSet.Config as cms
 
-from Configuration.Eras.Era_Run2_2018_cff import Run2_2018
-from Configuration.Eras.Modifier_run2_nanoAOD_106Xv2_cff import run2_nanoAOD_106Xv2
+from Configuration.Eras.Era_Run3_cff import Run3
+# from Configuration.Eras.Era_Run2_2018_cff import Run2_2018
+# from Configuration.Eras.Modifier_run2_nanoAOD_106Xv2_cff import run2_nanoAOD_106Xv2
+from Configuration.Eras.Modifier_run3_nanoAOD_122_cff import run3_nanoAOD_122
 
-process = cms.Process("NANO",Run2_2018,run2_nanoAOD_106Xv2)
+# process = cms.Process("NANO",Run2_2018,run3_nanoAOD_124)
+process = cms.Process("NANO",Run3,run3_nanoAOD_122)
+
+
 
 # import of standard configurations
 process.load("Configuration.StandardSequences.Services_cff")
@@ -61,6 +66,28 @@ process.configurationMetadata = cms.untracked.PSet(
     version = cms.untracked.string("$Revision: 1.19 $")
 )
 
+## let's try sara
+run3_nanoAOD_122.toModify(
+    process.linkedObjects, jets="finalJets"
+)
+
+# Replace AK4 Puppi with AK4 CHS for Run-2
+_nanoTableTaskCommonRun2 = process.nanoTableTaskCommon.copy()
+_nanoTableTaskCommonRun2.replace(process.jetPuppiTask, process.jetTask)
+_nanoTableTaskCommonRun2.replace(process.jetPuppiForMETTask, process.jetForMETTask)
+_nanoTableTaskCommonRun2.replace(process.jetPuppiTablesTask, process.jetTablesTask)
+run3_nanoAOD_122.toReplaceWith(
+    process.nanoTableTaskCommon, _nanoTableTaskCommonRun2
+)
+
+run3_nanoAOD_122.toModify(
+    process.ptRatioRelForEle, srcJet="updatedJets"
+)
+run3_nanoAOD_122.toModify(
+    process.ptRatioRelForMu, srcJet="updatedJets"
+)
+
+
 # Output definition
 assert(args.disTauTagOutputOpt in [0, 1, 2])
 
@@ -108,7 +135,9 @@ process.NANOAODSIMoutput = cms.OutputModule("NanoAODOutputModule",
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
 #process.GlobalTag = GlobalTag(process.GlobalTag, "106X_upgrade2018_realistic_v16_L1v1", "")
-process.GlobalTag = GlobalTag(process.GlobalTag, "auto:phase1_2018_realistic", "")
+# process.GlobalTag = GlobalTag(process.GlobalTag, "auto:phase1_2018_realistic", "")
+process.GlobalTag = GlobalTag(process.GlobalTag, "auto:phase1_2022_realistic_postEE", "")
+
 
 # Path and EndPath definitions
 #process.nanoAOD_step = cms.Path(process.nanoSequenceMC)

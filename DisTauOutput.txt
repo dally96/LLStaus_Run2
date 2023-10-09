@@ -1,0 +1,16 @@
+DisTauTagOutputOpt is  2
+                         : Booking "electronMVATTH" of type "BDT" from /cvmfs/cms.cern.ch/slc7_amd64_gcc10/cms/cmssw/CMSSW_12_6_4/external/slc7_amd64_gcc10/data/PhysicsTools/NanoAOD/data/el_BDTG_2017.weights.xml.
+                         : Reading weight file: /cvmfs/cms.cern.ch/slc7_amd64_gcc10/cms/cmssw/CMSSW_12_6_4/external/slc7_amd64_gcc10/data/PhysicsTools/NanoAOD/data/el_BDTG_2017.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDTG" of type: "BDT"
+                         : Booking "muonMVALowPt" of type "BDT" from /cvmfs/cms.cern.ch/slc7_amd64_gcc10/cms/cmssw/CMSSW_12_6_4/external/slc7_amd64_gcc10/data/PhysicsTools/NanoAOD/data/mu_BDTG_lowpt.weights.xml.
+                         : Reading weight file: /cvmfs/cms.cern.ch/slc7_amd64_gcc10/cms/cmssw/CMSSW_12_6_4/external/slc7_amd64_gcc10/data/PhysicsTools/NanoAOD/data/mu_BDTG_lowpt.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDTG" of type: "BDT"
+                         : Booking "muonMVATTH" of type "BDT" from /cvmfs/cms.cern.ch/slc7_amd64_gcc10/cms/cmssw/CMSSW_12_6_4/external/slc7_amd64_gcc10/data/PhysicsTools/NanoAOD/data/mu_BDTG_2017.weights.xml.
+                         : Reading weight file: /cvmfs/cms.cern.ch/slc7_amd64_gcc10/cms/cmssw/CMSSW_12_6_4/external/slc7_amd64_gcc10/data/PhysicsTools/NanoAOD/data/mu_BDTG_2017.weights.xml
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDTG" of type: "BDT"

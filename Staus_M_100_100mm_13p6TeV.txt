@@ -1,0 +1,3 @@
+isMC=True disTauTagOutputOpt=1
+
+STAU_longlived_M100_10cm /Staus_M_100_100mm_13p6TeV_Run3Summer22EE/lpcdisptau-MINIAODSIM-0f6cb413c9f7bbff91a8bbf8151ecb91/USER 
