@@ -3,6 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from PhysicsTools.NanoAOD.common_cff import *
 from PhysicsTools.NanoAOD.genparticles_cff import *
 from PhysicsTools.NanoAOD.taus_cff import *
+from PhysicsTools.NanoAOD.muons_cff import *
 from PhysicsTools.NanoAOD.jetsAK4_CHS_cff import *
 #from PhysicsTools.NanoAOD.jets_cff import *
 
@@ -21,6 +22,50 @@ def customize_process_and_associate(process, isMC, disTauTagOutputOpt = 1) :
             CandVars,
         )
     )
+
+    process.disMuonTable = cms.EDProducer("SimpleCandidateFlatTableProducer",
+        src = cms.InputTag("slimmedDisplacedMuons"),
+        name= cms.string("DisMuon"),
+        doc= cms.string("Displaced Muon Collection"),
+        singleton = cms.bool(False), # the number of entries is variable
+        extension = cms.bool(False), # this is the main table
+        variables = cms.PSet(CandVars,
+            dz = Var("dB('PVDZ')",float,doc="dz (with sign) wrt first PV, in cm",precision=10),
+            dzErr = Var("abs(edB('PVDZ'))",float,doc="dz uncertainty, in cm",precision=6),
+            dxy = Var("dB('PV2D')",float,doc="dxy (with sign) wrt first PV, in cm",precision=10),
+            dxyErr = Var("edB('PV2D')",float,doc="dxy uncertainty, in cm",precision=6),
+            isPFcand = Var("isPFMuon",bool,doc="muon is PF candidate"),
+            isGlobal = Var("isGlobalMuon",bool,doc="muon is global muon"),
+            isTracker = Var("isTrackerMuon",bool,doc="muon is tracker muon"),
+            isStandalone = Var("isStandAloneMuon",bool,doc="muon is a standalone muon"),
+            mediumId = Var("passed('CutBasedIdMedium')",bool,doc="cut-based ID, medium WP"),
+            looseId  = Var("passed('CutBasedIdLoose')",bool, doc="muon is loose muon"),
+            tightId = Var("passed('CutBasedIdTight')",bool,doc="cut-based ID, tight WP"),
+            softId = Var("passed('SoftCutBasedId')",bool,doc="soft cut-based ID"),               
+        )
+    )
+
+    process.disMuonsMCMatchForTable = cms.EDProducer("MCMatcher",       # cut on deltaR, deltaPt/Pt; pick best by deltaR
+        src         = process.disMuonTable.src,                         # final reco collection
+        matched     = cms.InputTag("finalGenParticles"),     # final mc-truth particle collection
+        mcPdgId     = cms.vint32(13),               # one or more PDG ID (13 = mu); absolute values (see below)
+        checkCharge = cms.bool(False),              # True = require RECO and MC objects to have the same charge
+        mcStatus    = cms.vint32(1),                # PYTHIA status code (1 = stable, 2 = shower, 3 = hard scattering)
+        maxDeltaR   = cms.double(0.3),              # Minimum deltaR for the match
+        maxDPtRel   = cms.double(0.5),              # Minimum deltaPt/Pt for the match
+        resolveAmbiguities    = cms.bool(True),     # Forbid two RECO objects to match to the same GEN object
+        resolveByMatchQuality = cms.bool(True),    # False = just match input in order; True = pick lowest deltaR pair first
+    )
+
+    process.disMuonMCTable = cms.EDProducer("CandMCMatchTableProducer",
+        src     = process.disMuonTable.src,
+        mcMap   = cms.InputTag("disMuonsMCMatchForTable"),
+        objName = process.disMuonTable.name,
+        objType = cms.string("Muon"), #cms.string("Muon"),
+        branchName = cms.string("genPart"),
+        docString = cms.string("MC matching to status==1 muons"),
+    )
+
     
     
     # PF candidates
@@ -153,7 +198,9 @@ def customize_process_and_associate(process, isMC, disTauTagOutputOpt = 1) :
         
         process.custom_nanoaod_task = cms.Task(
             process.lostTrackTable,
-            
+            process.disMuonTable, 
+            process.disMuonsMCMatchForTable,
+            process.disMuonMCTable,
             process.isFromTauForPfCand,
             process.pfCandTable,
             
@@ -166,7 +213,9 @@ def customize_process_and_associate(process, isMC, disTauTagOutputOpt = 1) :
         
         process.custom_nanoaod_task = cms.Task(
             process.lostTrackTable,
-            
+            process.disMuonTable,   
+            process.disMuonsMCMatchForTable,
+            process.disMuonMCTable,
             process.isFromTauForPfCand,
             process.pfCandTable,
             
