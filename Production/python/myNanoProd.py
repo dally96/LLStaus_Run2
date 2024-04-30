@@ -97,7 +97,8 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(),
-    secondaryFileNames = cms.untracked.vstring()
+    secondaryFileNames = cms.untracked.vstring(),
+    #lumisToProcess = cms.untracked.VLuminosityBlockRange('1:16-1:16', '1:21-1:21')
     )
 from LLStaus_Run2.Production.readFileList import *
 if len(args.inputFiles) > 0:
@@ -148,6 +149,35 @@ if (args.era == "2022"):
         process.ptRatioRelForMu, srcJet="updatedJets"
     )
 
+process.trigoutput = cms.EDFilter("TriggerResultsFilter",
+      
+    ### Filter events on trigger
+    #SelectEvents = cms.untracked.PSet(
+    triggerConditions = cms.vstring("HLT_PFMET120_PFMHT120_IDTight_v20",
+                                      "HLT_PFMET130_PFMHT130_IDTight_v20",
+                                      "HLT_PFMET140_PFMHT140_IDTight_v20",
+                                      "HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_v20",
+                                      "HLT_PFMETNoMu130_PFMHTNoMu130_IDTight_v19", 
+                                      "HLT_PFMETNoMu140_PFMHTNoMu140_IDTight_v19",
+                                      "HLT_PFMET120_PFMHT120_IDTight_PFHT60_v9",
+                                      "HLT_MonoCentralPFJet80_PFMETNoMu120_PFMHTNoMu120_IDTight_v20",
+                                      "HLT_PFMETTypeOne140_PFMHT140_IDTight_v11",
+                                      "HLT_MET105_IsoTrk50_v9",
+                                      "HLT_PFMETNoMu110_PFMHTNoMu110_IDTight_FilterHF_v1",
+                                      "HLT_MET120_IsoTrk50_v9",
+                                      "HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS35_L2NN_eta2p1_CrossL1_v1",
+                                      "HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_CrossL1_v1",
+                                      "HLT_Ele30_WPTight_Gsf_v1",
+                                      'HLT_DoubleMediumDeepTauPFTauHPS35_L2NN_eta2p1_v1',
+                                      'HLT_DoubleMediumChargedIsoDisplacedPFTauHPS32_Trk1_eta2p1_v1',
+                                      'HLT_DoubleMediumChargedIsoPFTauHPS40_Trk1_eta2p1_v1'
+            ),
+    hltResults = cms.InputTag("TriggerResults", "", "HLT"),
+    l1tResults = cms.InputTag("gtStage2Digis"),
+    throw = cms.bool(True)
+    #),
+)
+
 # Output definition
 assert(args.disTauTagOutputOpt in [0, 1, 2])
 
@@ -157,7 +187,7 @@ else :
     outputCommands = process.NANOAODEventContent.outputCommands
 
 if args.disTauTagOutputOpt == 1 :
-    
+    outputCommands += cms.untracked.vstring("keep *_TriggerResults_*_*")
     args.outFile = args.outFile.replace(".root", "_with-disTauTagScore.root")
 
 elif args.disTauTagOutputOpt == 2 :
@@ -168,6 +198,7 @@ elif args.disTauTagOutputOpt == 2 :
         #"keep nanoaodFlatTable_*Table_*_*",
         #"keep nanoaodFlatTable_*Table_*_*",
         "keep nanoaodFlatTable_jetTable_*_*",
+        "keep *_TriggerResults_*_*",
     )
     
     args.outFile = args.outFile.replace(".root", "_only-disTauTagScore.root")
@@ -179,9 +210,11 @@ process.NANOAODoutput = cms.OutputModule("NanoAODOutputModule",
         dataTier = cms.untracked.string("NANOAODSIM") if isMC else cms.untracked.string("NANOAOD"),
         filterName = cms.untracked.string("")
     ),
-    fileName = cms.untracked.string(args.outFile),
+    fileName = cms.untracked.string("With_trigselec.root"),
     outputCommands = outputCommands,
 )
+
+
 
 # Additional output definition
 
@@ -194,7 +227,7 @@ else :
     process.nanoAOD_step = cms.Path(process.nanoSequence)
 
 process.endjob_step = cms.EndPath(process.endOfProcess)
-process.NANOAODoutput_step = cms.EndPath(process.NANOAODoutput)
+process.NANOAODoutput_step = cms.EndPath(process.trigoutput*process.NANOAODoutput)
 
 # Schedule definition
 process.schedule = cms.Schedule(process.nanoAOD_step,process.endjob_step,process.NANOAODoutput_step)
@@ -213,6 +246,7 @@ else :
 
 from LLStaus_Run2.Production.customize_nanoaod_eventcontent_cff import *
 customize_process_and_associate(process, isMC = isMC, disTauTagOutputOpt = args.disTauTagOutputOpt)
+
 
 # End of customisation functions
 
