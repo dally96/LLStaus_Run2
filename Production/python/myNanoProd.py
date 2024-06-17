@@ -210,7 +210,7 @@ process.NANOAODoutput = cms.OutputModule("NanoAODOutputModule",
         dataTier = cms.untracked.string("NANOAODSIM") if isMC else cms.untracked.string("NANOAOD"),
         filterName = cms.untracked.string("")
     ),
-    fileName = cms.untracked.string("With_trigselec.root"),
+    fileName = cms.untracked.string("nanoaod_output.root"),
     outputCommands = outputCommands,
 )
 
@@ -228,6 +228,7 @@ else :
 
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.NANOAODoutput_step = cms.EndPath(process.trigoutput*process.NANOAODoutput)
+#process.NANOAODoutput_step = cms.EndPath(process.NANOAODoutput)
 
 # Schedule definition
 process.schedule = cms.Schedule(process.nanoAOD_step,process.endjob_step,process.NANOAODoutput_step)
