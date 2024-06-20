@@ -1,0 +1,3 @@
+isMC=True disTauTagOutputOpt=1 era=2022
+
+Staus_M_100_100mm_13p6TeV_Run3Summer22 /Staus_M_100_100mm_13p6TeV_Run3Summer22/lpcdisptau-MINIAODSIM-4121b09338b02130e8175442afae4ad7/USER
